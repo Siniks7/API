@@ -8,7 +8,7 @@ export class UserController extends BaseController {
         this.bindRoutes([
             { path: '/login', method: 'post', func: this.login },
             { path: '/register', method: 'post', func: this.register }
-        ])
+        ], 'users')
     }
 
     login(req: Request, res: Response, next: NextFunction) {
