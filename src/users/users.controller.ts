@@ -13,8 +13,13 @@ export class UserController extends BaseController implements IUserController {
         super(loggerService);
         this.bindRoutes([
             { path: '/login', method: 'post', func: this.login },
-            { path: '/register', method: 'post', func: this.register }
+            { path: '/register', method: 'post', func: this.register },
+            { path: '/', method: 'get', func: this.returnUser }
         ], 'users')
+    }
+
+    returnUser(req: Request, res: Response, next: NextFunction) {
+        this.ok(res, 'User');
     }
 
     login(req: Request, res: Response, next: NextFunction) {
