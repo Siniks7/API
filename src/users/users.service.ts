@@ -26,12 +26,7 @@ export class UserService implements IUserService {
 	}
 
 	async getUserInfo( email : string): Promise<UserModel | null> {
-		const existedUser = await this.usersRepository.find(email);
-		if (existedUser) {
-			return existedUser;
-		} else {
-			return null;
-		}	
+		return await this.usersRepository.find(email);
 	}
 
 	async validateUser({ email, password }: UserLoginDto): Promise<boolean> {
