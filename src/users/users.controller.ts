@@ -12,6 +12,7 @@ import { IUserService } from './users.service.interface';
 import { ValidateMiddleware } from '../common/validate.middleware';
 import { sign } from 'jsonwebtoken';
 import { IConfigService } from '../config/config.service.interface';
+import { GuardMiddleware } from '../common/auth.guard';
 
 @injectable()
 export class UserController extends BaseController implements IUserController {
@@ -32,6 +33,10 @@ export class UserController extends BaseController implements IUserController {
 				func: this.register,
 				middlewares: [new ValidateMiddleware(UserRegisterDto)],
 			},
+			{
+				path: '/info', method: 'get', func: this.info,  
+				middlewares: [new GuardMiddleware()]
+			},
 			{path: '/',method: 'get',func: this.returnUser}
 		], 'users');
 	}
@@ -43,7 +48,7 @@ export class UserController extends BaseController implements IUserController {
 	async login({ body }: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): Promise<void> {
 		const result = await this.userService.validateUser(body);
 		if (!result) {
-			return next(new HTTPError(401, 'ошибка авторизации', 'login'));
+			return next(new HTTPError(401, 'Ошибка авторизации', 'login'));
 		}
 		const jwt = await this.signJWT(body.email, this.configService.get('SECRET'));
 		this.ok(res, { jwt });
@@ -59,6 +64,14 @@ export class UserController extends BaseController implements IUserController {
 			return next(new HTTPError(422, 'Такой пользователь уже существует'));
 		}
 		this.ok(res, { email: result.email, id: result.id });
+	}
+
+	async info({ user }: Request, res: Response, next: NextFunction): Promise<void> {
+		const result = await this.userService.getUserInfo(user);
+		if (!result) {
+			return next(new HTTPError(401, 'Ошибка авторизации', 'info'));
+		}
+		this.ok(res, { name: result.name, email: result.email, id: result.id });
 	}
 
 	private signJWT(email: string, secret: string): Promise<string> {
@@ -81,5 +94,5 @@ export class UserController extends BaseController implements IUserController {
 			);
 		});
 	}
-	
+
 }
