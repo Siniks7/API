@@ -12,7 +12,7 @@ export class UserService implements IUserService {
 	async createUser({ email, name, password }: UserRegisterDto): Promise<User | null> {
 		const newUser = new User(email, name);
 		const salt = this.configService.get('SALT');
-		await newUser.setPassword(password, Number(salt));
+		await newUser.setPassword(password, Number(salt));	
 		// проверка что он есть?
 		// если есть - возвращаем null
 		// если нет - создаём
