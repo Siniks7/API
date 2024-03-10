@@ -33,6 +33,7 @@ beforeAll(() => {
 });
 
 let createdUser: UserModel | null;
+let validUser: boolean;
 
 describe('User Service', () => {
 	it('createUser', async () => {
@@ -53,4 +54,13 @@ describe('User Service', () => {
 		expect(createdUser?.id).toEqual(1);
 		expect(createdUser?.password).not.toEqual('1');
 	});
+	it('validateUser', async () => {
+		usersRepository.find = jest.fn().mockReturnValueOnce(createdUser);
+		validUser = await usersService.validateUser({
+			email: 'a@a.ru',
+			password: '1',
+		});
+		expect(validUser).toBeTruthy();
+	});
+
 });
